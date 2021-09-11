@@ -1,0 +1,50 @@
+#nav {
+    position: fixed; 
+    bottom: 0; 
+    width: 100%; 
+    background-color:#FFF;
+}
+
+#navMore {
+    width: 100%;
+    height: 100%; 
+    transition: bottom 0.3s;
+    background-color:#FFF;
+}
+
+#navMoreText {
+    color:#014388;
+}
+
+#icon, #txt {
+    color:lightgrey; 
+}
+
+#txt {
+    font-size: 12px;
+}
+
+#wdth {
+    width: 100%;
+}
+
+#bckgnd {
+    background-color: #014388;
+}
+
+#wfnt {
+    font-weight: bold; 
+    color: #0a7ebd;
+}
+
+#wfnt:hover {
+    color:white;
+}
+
+#wfnt:active {
+    color: yellow;
+}
+
+#mleft {
+    margin-left: 10px;
+}
