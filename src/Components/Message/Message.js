@@ -21,7 +21,7 @@ export function Message(props) {
 
         //set className based on device viewport
         if(device === "browser") {
-            var className = "mb-2 p-2"
+            var className = "mb-3 p-2"
         }
         else if (device === "mobile") {
             className = "mb-2 mx-auto p-1"
@@ -44,7 +44,7 @@ export function Message(props) {
                 textAlign: "center",
                 backgroundColor: backgroundColor,
                 color: textColor,
-                borderRadius: "5px"}
+                borderRadius: "0px"}
             console.log(messageStyle);
         }
         else {
@@ -53,19 +53,25 @@ export function Message(props) {
 
         //set div text based on type of message from parent componenet
         if(message === "loginFail") {
-            var notice = "The Email or Passcode you entered does not match our records"
+            var notice = "The Email or Passcode you entered does not match our records."
         }
         else if(message === "update") {
-            notice = "Update successful"
+            notice = "Update successful."
         }
         else if(message === "required") {
-            notice = "Please make sure no required fields are left blank"
+            notice = "Please make sure no required fields are left blank."
         }
         else if(message === "password") {
             notice = "Passwords do not match"
         }
         else if(message === "signupSuccess") {
-            notice = "Registration successful. Redirecting to Log In"
+            notice = "Registration successful. Redirecting to Log In."
+        }
+        else if(message === "loginSuccess") {
+            notice = "Login successful."
+        }
+        else if(message === "duplicate") {
+            notice = "This email is already in use with another account."
         }
 
     return (

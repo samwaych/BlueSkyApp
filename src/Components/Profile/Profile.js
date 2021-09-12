@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { API_BASE_URL } from "../API/Api.js";
+import { API_BASE_URL, fetchUser, fetchNews } from "../API/Api.js";
 import { MobileNavBar } from "../NavBar/MobileNavBar";
 import { BrowserNavBar } from "../NavBar/BrowserNavBar";
 import { BrowserView, MobileView } from "react-device-detect";
@@ -16,6 +16,7 @@ import { Message } from "../Message/Message.js";
 
 export function Profile() { 
     const [accountOption, setAccountOption] = useState();
+    const [users, setUsers] = useState([]);
     const [news, setNews] = useState([]);
     const [state, setState] = useState({
         userId: userId,
@@ -45,16 +46,26 @@ export function Profile() {
     })
 
     useEffect(() => {
-        fetchNews();
+        fetchNews().then(setNews);
       }, []);
     useEffect(() => {
     console.log(news);
     }, [news]);
 
-    const fetchNews = async () => {
+    useEffect(() => {
+        console.log(state.email);
+        }, [state.email]);
+
+    useEffect(() => {
+        if(state.email !== email){
+            fetchUser().then(setUsers);
+        }
+    }, [state.email])
+
+    /*const fetchNews = async () => {
         const response = await axios(`${API_BASE_URL}news/`);
         setNews(response.data);
-        };
+        };*/
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -107,6 +118,30 @@ export function Profile() {
                 sessionStorage.setItem('localUser', JSON.stringify(userArray));
                 console.log(sessionStorage.getItem('localUser'))
     }
+
+    const checkEmailDup = () => {
+        var duplicate;
+        if (state.email !== email) {
+            for (let i in users) {
+                if (state.email === users[i].email) { 
+                    duplicate = true;
+                    setState((prevState) => ({
+                        ...prevState,
+                        display: true,
+                        type: "fail",
+                        message: "duplicate"
+                    }));
+                    return
+                }
+                else {
+                    duplicate = false;
+                }       
+            }
+        }
+        if (!duplicate) {
+            updateUser();
+        }
+    }
     
     const updateUser = () => {
         if (state.newPassword.length && state.firstName.length && state.lastName.length && state.email.length) {
@@ -121,7 +156,7 @@ export function Profile() {
             sendDetailsToServer(payload);
             console.log(state.newPassword);
         } 
-        else if (!state.newPassword.length && state.firstName.length && state.lastName.length && state.email.length) {
+        else if (!state.newPassword.length && state.firstName.length && state.lastName.length && state.email.length && !state.duplicate) {
             payload = {
                 firstName: state.firstName,
                 lastName: state.lastName,
@@ -142,8 +177,12 @@ export function Profile() {
 
     const handleUpdate = (e) => {
         e.preventDefault();
+        setState((prevState) => ({
+            ...prevState,
+            message: ""
+        }));
         if (state.newPassword === state.confirmPassword) {
-            updateUser();
+            checkEmailDup();
         } 
         else {
             setState((prevState) => ({
@@ -238,7 +277,6 @@ export function Profile() {
                                 />
                             </Form.Group>
                             <Message device="browser" display={state.display} type={state.type} message={state.message}/>
-                            <br />
                             <Button onClick={handleUpdate}
                                 id="btn"
                                 variant="dark"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserView, MobileView } from "react-device-detect";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
@@ -6,12 +6,13 @@ import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 import BlueSkyLogo from "../Images/loginLogo.png";
 import MobileBlueSkyLogo from "../Images/mobileLoginHeader.png";
-import { API_BASE_URL } from "../API/Api";
+import { API_BASE_URL, fetchUser } from "../API/Api";
 import { withRouter } from "react-router-dom";
 import { Message } from "../Message/Message";
 import './SignUp.css';
 
 function SignUp(props) {
+    const [users, setUsers] = useState([]);
     const [state, setState] = useState({
         email: "",
         firstName: "",
@@ -23,6 +24,10 @@ function SignUp(props) {
         type: "",
         message: ""
     });
+
+    useEffect(() => {
+        fetchUser().then(setUsers);
+        }, [state.email])
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -81,10 +86,34 @@ function SignUp(props) {
         }
     };
 
+    const checkEmailDup = () => {
+        var duplicate;
+        for (let i in users) {
+            if (state.email === users[i].email) { 
+                duplicate = true;
+                setState((prevState) => ({
+                    ...prevState,
+                    display: true,
+                    type: "fail",
+                    message: "duplicate"
+                }));
+                return
+            }
+            else {
+                duplicate = false;
+            }
+        }       
+            
+        if (!duplicate) {
+            sendDetailsToServer();
+        }
+        
+    }
+
     const handleSubmitClick = (e) => {
         e.preventDefault();
         if (state.newPassword === state.confirmPassword) {
-            sendDetailsToServer();
+            checkEmailDup();
         } else {
             setState((prevState) => ({
                 ...prevState,
@@ -218,7 +247,6 @@ function SignUp(props) {
                             >
                                 REGISTER NEW USER
                             </Form.Label>
-                            <Message device="mobile" display={state.display} type={state.type} message={state.message}/>
                             <Form.Group size="lg" controlId="email" className="mb-1">
                                 <Form.Control
                                     className="fcontrol"
@@ -277,6 +305,7 @@ function SignUp(props) {
                                     onChange={handleChange}
                                 />
                             </Form.Group>
+                            <Message device="mobile" display={state.display} type={state.type} message={state.message}/>
                             <Button
                                 href="/home"
                                 block
